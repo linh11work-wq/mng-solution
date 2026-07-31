@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bản đồ nghiệp vụ &amp; Hệ thống — Miền Nam Group</title>
+<style>
+  :root{
+    --crm-bg:#f3e8ff; --crm-bd:#9333ea;
+    --eof-bg:#ffedd5; --eof-bd:#ea580c;
+    --dems-bg:#fef08a; --dems-bd:#ca8a04;
+    --mes-bg:#dcfce7; --mes-bd:#16a34a;
+    --erp-bg:#ccfbf1; --erp-bd:#0d9488;
+    --pmkt-bg:#e0e7ff; --pmkt-bd:#4f46e5;
+    --bi-bg:#e2e8f0;  --bi-bd:#475569;
+    --elr-bg:#ffe4e6; --elr-bd:#e11d48;
+    --intg-bg:#e0f2fe; --intg-bd:#0284c7;
+    --ink:#1a2a4a; --muted:#7b8794; --line:#dfe3e8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#f4f6f8;font-family:'Segoe UI',-apple-system,Arial,sans-serif;color:#22303f;}
+  header.top{background:#fff;border-bottom:1px solid var(--line);padding:18px 28px 0;position:sticky;top:0;z-index:20}
+  h1{margin:0;font-size:21px;color:var(--ink);letter-spacing:-.2px}
+  .sub{margin:4px 0 12px;font-size:12.5px;color:var(--muted)}
+  nav{display:flex;gap:4px;flex-wrap:wrap}
+  nav button{border:1px solid var(--line);border-bottom:none;background:#f4f6f8;color:#5a6b7d;
+    padding:8px 15px;font-size:13px;font-weight:600;border-radius:7px 7px 0 0;cursor:pointer;font-family:inherit}
+  nav button.on{background:#fff;color:var(--ink);box-shadow:inset 0 3px 0 #ea580c;border-color:var(--line)}
+  main{padding:22px 28px 60px}
+  .slide{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;
+    box-shadow:0 1px 3px rgba(16,24,40,.05)}
+  .slide.on{display:block}
+  h2{margin:0 0 3px;font-size:19px;color:var(--ink)}
+  .note{font-size:12.5px;color:var(--muted);margin:0 0 16px;line-height:1.55}
+  .note b{color:#475569}
+
+  .legend{display:flex;gap:9px 22px;flex-wrap:wrap;align-items:center;margin:0 0 16px;padding:11px 13px;
+    background:#fafbfc;border:1px solid var(--line);border-radius:8px}
+  .lg{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#334155}
+  .sw{width:16px;height:16px;border-radius:3px;border:1px solid;flex:none}
+
+  .scroller{overflow-x:auto;padding-bottom:6px}
+  .matrix{display:grid;grid-template-columns:104px repeat(10,minmax(196px,1fr));gap:5px;min-width:2130px}
+  .grp{color:#fff;font-weight:700;font-size:13px;text-align:center;padding:8px 4px;border-radius:6px;letter-spacing:.2px}
+  .g1{background:#b45309}.g2{background:#1e3a5f}.g3{background:#15803d}.g4{background:#0f766e}
+  .dept{font-weight:700;font-size:12.5px;text-align:center;padding:10px 6px;border-radius:6px;color:#fff;line-height:1.35}
+  .dept small{display:block;font-weight:500;opacity:.85;font-size:10.5px;margin-top:3px}
+  .rowlab{display:flex;align-items:center;justify-content:center;text-align:center;font-size:12px;font-weight:700;
+    color:#4b5b6b;background:#f4f6f8;border-radius:6px;padding:6px;line-height:1.35}
+  .cell{background:#fbfcfd;border:1px solid #eef1f4;border-radius:7px;padding:6px;display:flex;flex-direction:column;gap:5px}
+  .none{font-size:11px;color:#b6c0cb;text-align:center;padding:16px 4px;line-height:1.5}
+
+  .chip{font-size:11.5px;line-height:1.38;padding:8px 8px;border-radius:5px;border:1px solid;display:block;color:#1f2937}
+  .crm{background:var(--crm-bg);border-color:var(--crm-bd)}
+  .eof{background:var(--eof-bg);border-color:var(--eof-bd)}
+  .dems{background:var(--dems-bg);border-color:var(--dems-bd)}
+  .mes{background:var(--mes-bg);border-color:var(--mes-bd)}
+  .erp{background:var(--erp-bg);border-color:var(--erp-bd)}
+  .pmkt{background:var(--pmkt-bg);border-color:var(--pmkt-bd)}
+  .bi{background:var(--bi-bg);border-color:var(--bi-bd)}
+  .elr{background:var(--elr-bg);border-color:var(--elr-bd)}
+  /* chưa có công cụ ghi nhận */
+  .nosys{background:#fff;border-color:#94a3b8;border-style:dashed}
+
+  .opsband{margin-top:22px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .opshead{background:#15803d;color:#fff;font-weight:700;font-size:13px;padding:9px 13px}
+  .opsbody{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;padding:14px}
+  .lane{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+  .lane h3{margin:0;font-size:12.5px;padding:9px 11px;color:#fff;font-weight:700}
+  .lane ul{margin:0;padding:9px 11px 11px;list-style:none;display:flex;flex-direction:column;gap:5px}
+  .lane li{font-size:11.5px;line-height:1.4;padding:8px 8px;border-radius:5px;border:1px solid;color:#1f2937}
+  .lane li i{font-style:normal;display:block;font-size:10.5px;color:#64748b;margin-top:3px}
+
+  .flagbox{margin-top:18px;border:1px dashed #dc2626;background:#fff7f7;border-radius:9px;padding:13px 15px}
+  .flagbox h3{margin:0 0 8px;font-size:13px;color:#7f1d1d}
+  .flagbox ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.8;color:#5b2020}
+  .flagbox b{color:#7f1d1d}
+
+  table{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:22px}
+  th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top;line-height:1.5}
+  th{background:#f4f6f8;color:var(--ink);font-weight:700}
+  td a{color:#1d4ed8}
+  h3.sec{font-size:14.5px;color:var(--ink);margin:22px 0 8px;padding-left:9px;border-left:3px solid #ea580c}
+
+  /* ==== Tab ưu tiên số hóa ==== */
+  #p3 .chip{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  #p3 .chip .ctext{flex:1}
+  .pr{flex:none;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:10.5px;font-weight:800;color:#fff}
+  .pr1{background:#b91c1c}
+  .pr2{background:#d97706}
+  .pr3{background:#94a3b8}
+  .prlegend{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:0 0 16px;padding:11px 13px;
+    background:#fafbfc;border:1px solid var(--line);border-radius:8px;font-size:12px;color:#334155}
+  .prlegend .plg{display:flex;align-items:center;gap:8px}
+
+  .explain{margin-top:22px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .explain h3{margin:0;padding:10px 14px;background:#1e3a5f;color:#fff;font-size:13px;font-weight:700}
+  .explain-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;padding:14px}
+  .explain-card{border:1px solid var(--line);border-radius:9px;padding:12px 13px;background:#fafbfc}
+  .explain-card .etitle{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+  .explain-card .etitle b{font-size:13px;color:var(--ink)}
+  .explain-card .etag{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid;flex:none}
+  .explain-card p{margin:0;font-size:12px;line-height:1.6;color:#475569}
+
+  .intg{background:var(--intg-bg);border-color:var(--intg-bd)}
+
+  /* ==== Gantt ==== */
+  .gscroll{overflow-x:auto;padding-bottom:6px}
+  .gantt{display:grid;grid-template-columns:170px 108px 150px 250px 78px repeat(17,36px);gap:2px;min-width:2150px;align-items:stretch}
+  .gyh{background:#dbe3ea;color:#334155;font-size:10.5px;font-weight:700;text-align:center;padding:4px 2px;border-radius:4px}
+  .gmh{background:#eef1f4;color:#5a6b7d;font-size:10px;font-weight:700;text-align:center;padding:5px 1px;border-radius:4px}
+  .gphase{color:#fff;font-weight:700;font-size:12px;padding:7px 10px;border-radius:5px;grid-column:1/23}
+  .gp1{background:#b45309}.gp2{background:#1e3a5f}.gp3{background:#15803d}
+  .ginfo{background:#fbfcfd;border:1px solid #eef1f4;border-radius:5px;padding:6px 8px;font-size:11px;line-height:1.4;color:#334155;display:flex;align-items:center}
+  .gsys{background:#fbfcfd;border:1px solid #eef1f4;border-radius:5px;padding:6px 4px;display:flex;align-items:center;justify-content:center}
+  .gsys span{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid}
+  .gtime{background:#fbfcfd;border:1px solid #eef1f4;border-radius:5px;padding:6px 4px;font-size:11px;font-weight:700;color:#475569;display:flex;align-items:center;justify-content:center;text-align:center}
+  .gtrack{background:#f7f8fa;border-radius:3px}
+  .gbar{border-radius:5px;border:1px solid;opacity:.92}
+
+  @media print{ nav,header.top{position:static} .slide{display:block!important;page-break-after:always;box-shadow:none} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <h1>Bản đồ nghiệp vụ &amp; Hệ thống — Miền Nam Group</h1>
+  <p class="sub">Mô hình tổng quan toàn Group · sắp xếp theo khối và phòng ban · nội dung nghiệp vụ &amp; hệ thống lấy từ MNG - Solution map overview · cập nhật 28/07/2026</p>
+  <nav>
+    <button class="on" data-t="p1">Tổng quan toàn Group</button>
+    <button data-t="p4">Timeline</button>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============ TRANG 1 ============ -->
+<section class="slide on" id="p1">
+  <h2>Mô hình tổ chức chức năng mục tiêu — toàn tập đoàn</h2>
+  <p class="note">Bốn khối: <b>Khối Kinh doanh</b> · <b>Khối Office (Tập đoàn)</b> · <b>Khối Dịch vụ &amp; Phụ tùng (2S)</b> · <b>Khối Vận hành &amp; Công ty con</b>. Trục dọc chia <b>Chức năng cốt lõi</b> / <b>Chức năng hỗ trợ</b>. Màu ô = hệ thống xử lý.</p>
+
+  <div class="legend">
+    <div class="lg"><span class="sw" style="background:var(--crm-bg);border-color:var(--crm-bd)"></span>CRM</div>
+    <div class="lg"><span class="sw" style="background:var(--eof-bg);border-color:var(--eof-bd)"></span>E-office</div>
+    <div class="lg"><span class="sw" style="background:var(--dems-bg);border-color:var(--dems-bd)"></span>DMS</div>
+    <div class="lg"><span class="sw" style="background:var(--erp-bg);border-color:var(--erp-bd)"></span>ERP</div>
+    <div class="lg"><span class="sw" style="background:var(--pmkt-bg);border-color:var(--pmkt-bd)"></span>MISA</div>
+    <div class="lg"><span class="sw" style="background:var(--bi-bg);border-color:var(--bi-bd)"></span>BI Tool / Report system</div>
+    <div class="lg"><span class="sw" style="background:var(--elr-bg);border-color:var(--elr-bd)"></span>E-learning</div>
+  </div>
+
+  <div class="scroller">
+  <div class="matrix">
+    <!-- hàng khối -->
+    <div></div>
+    <div class="grp g1" style="grid-column:span 2">Khối Kinh doanh</div>
+    <div class="grp g2" style="grid-column:span 4">Khối Office (Tập đoàn)</div>
+    <div class="grp g4" style="grid-column:span 2">Khối Dịch vụ &amp; Phụ tùng (2S)</div>
+    <div class="grp g3" style="grid-column:span 2">Khối Vận hành &amp; Công ty con</div>
+
+    <!-- hàng phòng ban -->
+    <div></div>
+    <div class="dept" style="background:#a16207">Marketing</div>
+    <div class="dept" style="background:#c2410c">Sales</div>
+    <div class="dept" style="background:#92400e">Mua hàng</div>
+    <div class="dept" style="background:#991b1b">Tài chính – Kế toán</div>
+    <div class="dept" style="background:#334155">Hành chính - Nhân sự</div>
+    <div class="dept" style="background:#0369a1">Pháp lý</div>
+    <div class="dept" style="background:#0f766e">Xưởng dịch vụ</div>
+    <div class="dept" style="background:#115e59">Phụ tùng &amp; Kho phụ tùng</div>
+    <div class="dept" style="background:#15803d">Kho xe &amp; Logistic</div>
+    <div class="dept" style="background:#166534">Nhà máy đóng thùng</div>
+
+    <!-- CHỨC NĂNG CỐT LÕI -->
+    <div class="rowlab">Chức năng<br>cốt lõi</div>
+
+    <div class="cell"><!-- Marketing -->
+      <span class="chip crm">Digital Marketing</span>
+      <span class="chip crm">Quản lý lead</span>
+    </div>
+    <div class="cell"><!-- Sales -->
+      <span class="chip crm">Bán hàng Showroom - Sparepart - Service</span>
+      <span class="chip eof">Sales Admin</span>
+      <span class="chip eof">Thanh toán, công nợ KH<br>(cọc, thanh toán sau)</span>
+      <span class="chip crm">Thu cũ - Đổi mới</span>
+      <span class="chip crm">Chăm sóc khách hàng</span>
+      <span class="chip eof">Đấu thầu</span>
+    </div>
+    <div class="cell"><!-- Mua hàng -->
+      <span class="chip eof">Mua hàng (Vật tư, CCDC, Tài sản)</span>
+      <span class="chip dems">Nhập xe theo kế hoạch</span>
+    </div>
+    <div class="cell"><!-- Tài chính -->
+      <span class="chip eof">Thanh toán Nhà cung cấp</span>
+      <span class="chip eof">Thanh toán nội bộ</span>
+      <span class="chip pmkt">Kế toán - Tài chính quản trị</span>
+    </div>
+    <div class="cell"><!-- Hành chính - Nhân sự -->
+      <span class="chip eof">HRIS</span>
+      <span class="chip eof">Lịch làm việc, công, lương</span>
+      <span class="chip eof">Tuyển dụng</span>
+      <span class="chip eof">Onboarding - Đánh giá thử việc</span>
+    </div>
+    <div class="cell"><!-- Pháp lý -->
+      <span class="chip eof">Hợp đồng mua bán (Khách hàng, Đại lý)</span>
+      <span class="chip eof">Hợp đồng mua hàng</span>
+      <span class="chip eof">Ký số tập trung nội bộ</span>
+    </div>
+    <div class="cell"><!-- SRV -->
+      <span class="chip eof">Tiếp nhận xe &amp; lệnh sửa chữa</span>
+      <span class="chip eof">Báo giá dịch vụ</span>
+      <span class="chip eof">Cấp vật tư &amp; phụ tùng cho lệnh sửa chữa</span>
+      <span class="chip eof">Dịch vụ hậu mãi</span>
+    </div>
+    <div class="cell"><!-- PTS -->
+      <span class="chip erp">Nhập – xuất – tồn &amp; mã vạch Spare part</span>
+      <span class="chip crm">Bán phụ tùng lẻ &amp; phụ kiện</span>
+    </div>
+    <div class="cell"><!-- LOG -->
+      <span class="chip dems">Tracking số khung &amp; vị trí xe</span>
+      <span class="chip eof">Checking tình trạng xe khi nhận</span>
+      <span class="chip eof">Điều phối xe liên showroom</span>
+      <span class="chip dems">Tồn kho xe</span>
+    </div>
+    <div class="cell"><!-- FAC -->
+      <span class="chip eof">Nhận đơn &amp; báo giá nội bộ</span>
+      <span class="chip erp">Lệnh sản xuất &amp; định mức vật tư, nhân công</span>
+    </div>
+
+    <!-- CHỨC NĂNG HỖ TRỢ -->
+    <div class="rowlab">Chức năng<br>hỗ trợ</div>
+
+    <div class="cell"><!-- Marketing -->
+      <span class="chip crm">Quản lý kênh MKT<br>(website, facebook, zalo,...)</span>
+    </div>
+    <div class="cell"><!-- Sales -->
+      <span class="chip eof">Chính sách bán hàng<br>(tín dụng, bảo hiểm, sparepart, hoa hồng...)</span>
+      <span class="chip eof">Duyệt giá / giảm giá bán xe</span>
+      <span class="chip eof">Hồ sơ vay &amp; giải chấp ngân hàng</span>
+    </div>
+    <div class="cell"><!-- Mua hàng -->
+      <span class="chip eof">Duyệt giá mua ngang</span>
+      <span class="chip eof">Thanh toán NCC</span>
+      <span class="chip eof">Thông tin NCC</span>
+    </div>
+    <div class="cell"><!-- Tài chính -->
+      <span class="chip bi">DATA WAREHOUSE</span>
+      <span class="chip bi">BÁO CÁO HỢP NHẤT</span>
+      <span class="chip bi">BÁO CÁO TỪNG PHÁP NHÂN</span>
+      <span class="chip eof">Giao việc và báo cáo tiến độ</span>
+    </div>
+    <div class="cell"><!-- Hành chính - Nhân sự -->
+      <span class="chip elr">Đánh giá đào tạo</span>
+      <span class="chip bi">Đối soát KPI kinh doanh</span>
+      <span class="chip bi">Đối soát hoa hồng</span>
+      <span class="chip eof">Văn thư – lưu trữ</span>
+      <span class="chip eof">Giao việc và báo cáo tiến độ</span>
+    </div>
+    <div class="cell"><!-- Pháp lý -->
+      <span class="none">—</span>
+    </div>
+    <div class="cell"><!-- SRV -->
+      <span class="none">—</span>
+    </div>
+    <div class="cell"><!-- PTS -->
+    </div>
+    <div class="cell"><!-- LOG -->
+      <span class="chip eof">Vận chuyển &amp; giao nhận xe</span>
+      <span class="chip dems">Kiểm kê xe định kỳ</span>
+      <span class="chip eof">Giao việc và báo cáo tiến độ</span>
+    </div>
+    <div class="cell"><!-- FAC -->
+      <span class="chip eof">Điều phối đối tác đóng thùng ngoài</span>
+      <span class="chip eof">Nhân công &amp; chấm công xưởng</span>
+    </div>
+  </div>
+  </div>
+
+  <div class="explain">
+    <h3>Diễn giải nghiệp vụ trọng tâm</h3>
+    <div class="explain-grid">
+      <div class="explain-card">
+        <div class="etitle"><b>Chính sách bán hàng</b><span class="etag eof">E-office</span></div>
+        <p>Bảng quy tắc/tỷ lệ áp dụng cho mọi sản phẩm bán kèm xe — tín dụng, bảo hiểm, sparepart, phụ kiện — và hoa hồng theo cấp bậc kinh doanh, theo KPI. Là <b>quy tắc</b>, không phải số tiền; được định nghĩa và duyệt lại mỗi khi chính sách đổi theo kỳ.</p>
+      </div>
+      <div class="explain-card">
+        <div class="etitle"><b>Đối soát hoa hồng</b><span class="etag bi">BI Tool</span></div>
+        <p>Lấy dữ liệu giao dịch thực tế, áp vào Chính sách bán hàng để tính ra số hoa hồng từng sale được nhận. Đa hãng, mỗi hãng một tỷ lệ nên bước tính này là phần phức tạp nhất.</p>
+      </div>
+      <div class="explain-card">
+        <div class="etitle"><b>Đối soát KPI kinh doanh</b><span class="etag bi">BI Tool</span></div>
+        <p>Lấy số xe bán thực tế theo showroom → team → sale, đối chiếu với chỉ tiêu đã giao để tính % hoàn thành. Là phép tính trên dữ liệu giao dịch, không phải quy trình phê duyệt.</p>
+      </div>
+      <div class="explain-card">
+        <div class="etitle"><b>Đánh giá đào tạo</b><span class="etag elr">E-learning</span></div>
+        <p>Gộp chung đào tạo tổng quát (nhân sự mới) và đào tạo kỹ thuật (xưởng dịch vụ) — nhân viên tự học qua thư viện số, hệ thống tự chấm bài và cấp chứng chỉ.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ============ TRANG 4 — LỘ TRÌNH TRIỂN KHAI ============ -->
+<section class="slide" id="p4">
+  <h2>Timeline</h2>
+  <p class="note">3 giai đoạn, mốc thời gian tham khảo theo kế hoạch dự kiến — cần chốt lại tuần bắt đầu chính xác trước khi đưa vào hợp đồng.</p>
+
+  <div class="gscroll">
+  <div class="gantt">
+    <div style="grid-row:1"></div><div style="grid-row:1"></div><div style="grid-row:1"></div><div style="grid-row:1"></div><div style="grid-row:1"></div>
+    <div class="gyh" style="grid-row:1;grid-column:6/11">2026</div>
+    <div class="gyh" style="grid-row:1;grid-column:11/23">2027</div>
+    <div class="gyh" style="grid-row:2">Nghiệp vụ cốt lõi</div><div class="gyh" style="grid-row:2">Hệ thống</div><div class="gyh" style="grid-row:2">Quy mô triển khai</div><div class="gyh" style="grid-row:2">Kết quả kỳ vọng</div><div class="gyh" style="grid-row:2">Thời gian</div>
+    <div class="gmh" style="grid-row:2;grid-column:6">T8</div>
+    <div class="gmh" style="grid-row:2;grid-column:7">T9</div>
+    <div class="gmh" style="grid-row:2;grid-column:8">T10</div>
+    <div class="gmh" style="grid-row:2;grid-column:9">T11</div>
+    <div class="gmh" style="grid-row:2;grid-column:10">T12</div>
+    <div class="gmh" style="grid-row:2;grid-column:11">T1</div>
+    <div class="gmh" style="grid-row:2;grid-column:12">T2</div>
+    <div class="gmh" style="grid-row:2;grid-column:13">T3</div>
+    <div class="gmh" style="grid-row:2;grid-column:14">T4</div>
+    <div class="gmh" style="grid-row:2;grid-column:15">T5</div>
+    <div class="gmh" style="grid-row:2;grid-column:16">T6</div>
+    <div class="gmh" style="grid-row:2;grid-column:17">T7</div>
+    <div class="gmh" style="grid-row:2;grid-column:18">T8</div>
+    <div class="gmh" style="grid-row:2;grid-column:19">T9</div>
+    <div class="gmh" style="grid-row:2;grid-column:20">T10</div>
+    <div class="gmh" style="grid-row:2;grid-column:21">T11</div>
+    <div class="gmh" style="grid-row:2;grid-column:22">T12</div>
+
+    <div class="gphase gp1" style="grid-row:3">GIAI ĐOẠN 1 — Head Office &amp; Showroom mẫu, công ty con</div>
+    <div class="ginfo" style="grid-row:4">Quản lý quy trình vận hành, phê duyệt online, công việc số, quản trị thông tin nội bộ</div>
+    <div class="gsys" style="grid-row:4"><span class="eof">E-Office</span></div>
+    <div class="ginfo" style="grid-row:4">Head Office &amp; Showroom mẫu + công ty con</div>
+    <div class="ginfo" style="grid-row:4">Giao việc, phê duyệt không qua Zalo/Excel — có luồng rõ ràng, có nhật ký, biết ngay ai trễ và vì sao.</div>
+    <div class="gtime" style="grid-row:4">4–6 tuần</div>
+    <div class="gtrack" style="grid-row:4;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:4;grid-column:22"></div>
+    <div class="gbar eof" style="grid-row:4;grid-column:6/8"></div>
+
+    <div class="ginfo" style="grid-row:5">Tuyển dụng, Onboarding, Thử việc, HRIS, chấm công, nghỉ phép, tăng ca, lương theo giờ</div>
+    <div class="gsys" style="grid-row:5"><span class="eof">HRM</span></div>
+    <div class="ginfo" style="grid-row:5">Head Office &amp; Showroom mẫu + công ty con</div>
+    <div class="ginfo" style="grid-row:5">Hồ sơ nhân sự về một nơi; chuẩn hóa tuyển dụng – thử việc – chấm công, giảm tải cho nhân sự.</div>
+    <div class="gtime" style="grid-row:5">4–6 tuần</div>
+    <div class="gtrack" style="grid-row:5;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:5;grid-column:22"></div>
+    <div class="gbar eof" style="grid-row:5;grid-column:7/9"></div>
+
+    <div class="ginfo" style="grid-row:6">Tích hợp dữ liệu xuyên suốt Eoffice với ERP (Bravo) và Misa</div>
+    <div class="gsys" style="grid-row:6"><span class="intg">Tích hợp dữ liệu</span></div>
+    <div class="ginfo" style="grid-row:6">Head Office &amp; Showroom mẫu + công ty con</div>
+    <div class="ginfo" style="grid-row:6">Dữ liệu luân chuyển đồng nhất giữa các hệ thống, loại bỏ double work.</div>
+    <div class="gtime" style="grid-row:6">6–8 tuần</div>
+    <div class="gtrack" style="grid-row:6;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:6;grid-column:22"></div>
+    <div class="gbar intg" style="grid-row:6;grid-column:8/10"></div>
+
+    <div class="gphase gp2" style="grid-row:7">GIAI ĐOẠN 2 — Mở rộng toàn Showroom &amp; công ty con</div>
+    <div class="ginfo" style="grid-row:8">Các nghiệp vụ Giai đoạn 1</div>
+    <div class="gsys" style="grid-row:8"><span class="eof">Hệ thống GĐ1</span></div>
+    <div class="ginfo" style="grid-row:8">Các Showroom &amp; công ty con còn lại</div>
+    <div class="ginfo" style="grid-row:8">Nhân bản mô hình chuẩn cho các showroom, so sánh hiệu quả ngay trên hệ thống.</div>
+    <div class="gtime" style="grid-row:8">6–8 tuần</div>
+    <div class="gtrack" style="grid-row:8;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:8;grid-column:22"></div>
+    <div class="gbar eof" style="grid-row:8;grid-column:9/11"></div>
+
+    <div class="ginfo" style="grid-row:9">Marketing, Bán hàng, Chăm sóc khách hàng</div>
+    <div class="gsys" style="grid-row:9"><span class="crm">CRM</span></div>
+    <div class="ginfo" style="grid-row:9">Toàn Khối Kinh doanh</div>
+    <div class="ginfo" style="grid-row:9">Chuẩn hóa quy trình, chính sách MKT/bán hàng, ghi nhận doanh thu thực tế.</div>
+    <div class="gtime" style="grid-row:9">6–8 tuần</div>
+    <div class="gtrack" style="grid-row:9;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:9;grid-column:22"></div>
+    <div class="gbar crm" style="grid-row:9;grid-column:10/12"></div>
+
+    <div class="ginfo" style="grid-row:10">Báo cáo hợp nhất, báo cáo từng pháp nhân, dự báo doanh thu – chi phí</div>
+    <div class="gsys" style="grid-row:10"><span class="bi">BI Tool</span></div>
+    <div class="ginfo" style="grid-row:10">Ban lãnh đạo Tập đoàn &amp; các công ty con</div>
+    <div class="ginfo" style="grid-row:10">Báo cáo tự động, chính xác về tài chính và vận hành toàn tập đoàn.</div>
+    <div class="gtime" style="grid-row:10">6–8 tuần</div>
+    <div class="gtrack" style="grid-row:10;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:10;grid-column:22"></div>
+    <div class="gbar bi" style="grid-row:10;grid-column:11/13"></div>
+
+    <div class="gphase gp3" style="grid-row:11">GIAI ĐOẠN 3 — Showroom vận hành &amp; Nhà máy đóng thùng</div>
+    <div class="ginfo" style="grid-row:12">Xuất/nhập/kiểm kê định kỳ, tồn kho xe, điều phối xe, dịch vụ hậu mãi (bảo trì/bảo dưỡng định kỳ)</div>
+    <div class="gsys" style="grid-row:12"><span class="dems">DMS</span></div>
+    <div class="ginfo" style="grid-row:12">Showroom</div>
+    <div class="ginfo" style="grid-row:12">Quản lý, điều phối dữ liệu xe tập trung và chính xác.</div>
+    <div class="gtime" style="grid-row:12">6–12 tháng</div>
+    <div class="gtrack" style="grid-row:12;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:12;grid-column:22"></div>
+    <div class="gbar dems" style="grid-row:12;grid-column:13/19"></div>
+
+    <div class="ginfo" style="grid-row:13">Lệnh sản xuất, định mức vật tư, nhân công</div>
+    <div class="gsys" style="grid-row:13"><span class="erp">ERP – Sản xuất</span></div>
+    <div class="ginfo" style="grid-row:13">Nhà máy đóng thùng (xe tải, xe bus)</div>
+    <div class="ginfo" style="grid-row:13">Quản lý dữ liệu sản xuất, theo dõi tiến độ và chi phí thực tế.</div>
+    <div class="gtime" style="grid-row:13">6–12 tháng</div>
+    <div class="gtrack" style="grid-row:13;grid-column:6"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:7"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:8"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:9"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:10"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:11"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:12"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:13"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:14"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:15"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:16"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:17"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:18"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:19"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:20"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:21"></div>
+    <div class="gtrack" style="grid-row:13;grid-column:22"></div>
+    <div class="gbar erp" style="grid-row:13;grid-column:18/23"></div>
+
+  </div>
+  </div>
+
+  <div class="legend" style="margin-top:16px">
+    <div class="lg"><span class="sw" style="background:var(--eof-bg);border-color:var(--eof-bd)"></span>E-office / HRM</div>
+    <div class="lg"><span class="sw" style="background:var(--intg-bg);border-color:var(--intg-bd)"></span>Tích hợp dữ liệu</div>
+    <div class="lg"><span class="sw" style="background:var(--crm-bg);border-color:var(--crm-bd)"></span>CRM</div>
+    <div class="lg"><span class="sw" style="background:var(--bi-bg);border-color:var(--bi-bd)"></span>BI Tool</div>
+    <div class="lg"><span class="sw" style="background:var(--dems-bg);border-color:var(--dems-bd)"></span>DMS</div>
+    <div class="lg"><span class="sw" style="background:var(--erp-bg);border-color:var(--erp-bd)"></span>ERP</div>
+  </div>
+
+</section>
+
+</main>
+
+<script>
+  document.querySelectorAll('nav button').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('nav button').forEach(function(x){x.classList.remove('on')});
+      document.querySelectorAll('.slide').forEach(function(s){s.classList.remove('on')});
+      b.classList.add('on');
+      document.getElementById(b.dataset.t).classList.add('on');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
